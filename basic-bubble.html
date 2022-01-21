@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+          
+<!-- Load d3.js -->
+<script src="https://d3js.org/d3.v6.js"></script>
+<script src="https://d3js.org/d3-geo-projection.v3.min.js"></script>
+<!-- Create an element where the map will take place -->
+<div id="my_dataviz" ></svg>
+<!-- Button -->
+<div>
+  <input type="checkbox" class="checkbox" value="A" checked><label>Rock</label>
+  <input type="checkbox" class="checkbox" value="B" checked><label>Pop</label>
+  <input type="checkbox" class="checkbox" value="C" checked><label>Alternative Rock</label>
+  <input type="checkbox" class="checkbox" value="D" checked><label>Heavy Metal</label>
+  <input type="checkbox" class="checkbox" value="E" checked><label>Indie Pop</label>
+  <input type="checkbox" class="checkbox" value="F" checked><label>Punk Rock</label>
+  <input type="checkbox" class="checkbox" value="G" ><label>Black Metal</label>
+  <input type="checkbox" class="checkbox" value="H" ><label>Other Genres</label>
+  
+</div>
+
+<div id='legend'> 
+  <div class="header">Legend</div>
+  <ul>
+    <li id="3">
+      <div class="circle" style="background:red" id="3"></div>
+      Rock
+    </li>
+    <li id="2">
+      <div class="circle" style="background:yellow" id="2"></div>
+      Pop
+    </li>
+    <li id="1">
+      <div class="circle" style="background:#4CC417" id="1"></div>
+    Alternative<br>Rock
+    </li>
+    <li id="4">
+      <div class="circle" style="background:#ff00ff" id="0"></div>
+      Heavy Metal
+    </li>
+    <li id="5">
+      <div class="circle" style="background:#b4c04c" id="0"></div>
+      Indie Pop
+    </li>
+    <li id="6">
+      <div class="circle" style="background:#7E3517" id="0"></div>
+      Punk Rock
+    </li>
+    <li id="7">
+      <div class="circle" style="background:#9f00ff" id="0"></div>
+      Black Metal
+    </li>
+    <li id="8">
+      <div class="circle" style="background:black" id="0"></div>
+      Other Genres
+    </li>
+  </ul>
+  </div>
+
+
+<style>
+  #legend {
+    position:absolute;
+    top:0px;
+    right: 1px;
+    background: #fbfdfdd8;
+    border-radius: 10px;
+    display: block;
+    padding: 5px;
+    color: #1dcabc;
+    font-family:sans-serif;
+    text-align:center;
+    width:140px;
+    border:1px solid black;
+  }
+  ul{
+    padding:0;
+    margin-left:0px;
+    margin-right:0px;
+  }
+  li {
+    font-family:sans-serif;
+    font-size: 0.9em;
+    list-style-type: none;
+    margin-top:10px;
+    margin-bottom:10px;
+    vertical-align:middle;
+    padding-right:20px;
+    padding-left:30px;
+  }
+.header {
+  margin: 1px 1px 1px 1px;
+  text-align: center;
+  font-weight:bold;
+}
+.circle {
+  position:relative;
+  border-radius: 50%;
+  width: 15px;
+  height: 15px; 
+  float:left;
+}
+</style>
+
+<style>
+    .circle:hover{
+      stroke: black;
+      stroke-width: 4px;
+    }
+</style>
+
+<script>
+    // set width and height of svg
+const width = 1500
+const height = 700
+d3.csv('genre.csv')
+	.then(function(data) {
+    data.forEach(function(d) {
+    d.longitude = +d.longitude;
+    d.latitude = +d.latitude;
+    d.Freq = +d.Freq;
+  });  
+  
+  
+  
+        console.log(data); });
+  
+
+
+    
+        const markers = [
+
+        {long:  -3.435973 , lat:  55.378051 , Freq:  607 , genre:  'Rock' , name:  'United Kingdom' , group:  'A' },
+{long:  5.291266 , lat:  52.132633 , Freq:  54 , genre:  'Pop' , name:  'Netherlands' , group:  'B' },
+{long:  -95.712891 , lat:  37.09024 , Freq:  1914 , genre:  'Rock' , name:  'United States' , group:  'A' },
+{long:  10.451526 , lat:  51.165691 , Freq:  309 , genre:  'Pop' , name:  'Germany' , group:  'B' },
+{long:  18.643501 , lat:  60.128161 , Freq:  112 , genre:  'Pop' , name:  'Sweden' , group:  'B' },
+{long:  -8.224454 , lat:  39.399872 , Freq:  12 , genre:  'Fado' , name:  'Portugal' , group:  'H' },
+{long:  -51.92528 , lat:  -14.235004 , Freq:  224 , genre:  'MPB' , name:  'Brazil' , group:  'H' },
+{long:  -106.346771 , lat:  56.130366 , Freq:  113 , genre:  'Rock' , name:  'Canada' , group:  'A' },
+{long:  21.824312 , lat:  39.074208 , Freq:  7 , genre:  'Alternative Rock' , name:  'Greece' , group:  'C' },
+{long:  9.501785 , lat:  56.26392 , Freq:  27 , genre:  'Rock' , name:  'Denmark' , group:  'A' },
+{long:  4.469936 , lat:  50.503887 , Freq:  16 , genre:  'Pop' , name:  'Belgium' , group:  'B' },
+{long:  12.56738 , lat:  41.87194 , Freq:  138 , genre:  'Pop' , name:  'Italy' , group:  'B' },
+{long:  78.96288 , lat:  20.593684 , Freq:  3 , genre:  'Alternative Rock' , name:  'India' , group:  'C' },
+{long:  -63.616672 , lat:  -38.416097 , Freq:  67 , genre:  'Rock' , name:  'Argentina' , group:  'A' },
+{long:  8.468946 , lat:  60.472024 , Freq:  37 , genre:  'Black Metal' , name:  'Norway' , group:  'G' },
+{long:  2.213749 , lat:  46.227638 , Freq:  154 , genre:  'Pop' , name:  'France' , group:  'B' },
+{long:  138.252924 , lat:  36.204824 , Freq:  109 , genre:  'J-Pop' , name:  'Japan' , group:  'H' },
+{long:  25.748151 , lat:  61.92411 , Freq:  112 , genre:  'Hip Hop' , name:  'Finland' , group:  'H' },
+{long:  24.96676 , lat:  45.943161 , Freq:  17 , genre:  'Alternative Rock' , name:  'Romania' , group:  'C' },
+{long:  -3.74922 , lat:  40.463667 , Freq:  70 , genre:  'Pop' , name:  'Spain' , group:  'B' },
+{long:  133.775136 , lat:  -25.274398 , Freq:  62 , genre:  'Rock' , name:  'Australia' , group:  'A' },
+{long:  14.550072 , lat:  47.516231 , Freq:  36 , genre:  'Austropop' , name:  'Austria' , group:  'H' },
+{long:  19.145136 , lat:  51.919438 , Freq:  66 , genre:  'Rock' , name:  'Poland' , group:  'A' },
+{long:  105.318756 , lat:  61.52401 , Freq:  11 , genre:  'Rock' , name:  'Russian Federation' , group:  'A' },
+{long:  22.937506 , lat:  -30.559482 , Freq:  10 , genre:  'Rock' , name:  'South Africa' , group:  'A' },
+{long:  174.885971 , lat:  -40.900557 , Freq:  5 , genre:  'Pop' , name:  'New Zealand' , group:  'B' },
+{long:  14.995463 , lat:  46.151241 , Freq:  1 , genre:  'Singer-Songwriter' , name:  'Slovenia' , group:  'H' },
+{long:  15.472962 , lat:  49.817492 , Freq:  10 , genre:  'Folk' , name:  'Czech Republic' , group:  'H' },
+{long:  8.227512 , lat:  46.818188 , Freq:  20 , genre:  'Hard Rock' , name:  'Switzerland' , group:  'H' },
+{long:  19.503304 , lat:  47.162494 , Freq:  14 , genre:  'Heavy Metal' , name:  'Hungary' , group:  'D' },
+{long:  25.013607 , lat:  58.595272 , Freq:  5 , genre:  'Indie Pop' , name:  'Estonia' , group:  'E' },
+{long:  23.881275 , lat:  55.169438 , Freq:  11 , genre:  'Rock' , name:  'Lithuania' , group:  'A' },
+{long:  -71.542969 , lat:  -35.675147 , Freq:  8 , genre:  'Alternative Rock' , name:  'Chile' , group:  'C' },
+{long:  -102.552784 , lat:  23.634501 , Freq:  29 , genre:  'Alternative Rock' , name:  'Mexico' , group:  'C' },
+{long:  -66.590149 , lat:  18.220833 , Freq:  7 , genre:  'Reggaeton' , name:  'Puerto Rico' , group:  'H' },
+{long:  35.243322 , lat:  38.963745 , Freq:  53 , genre:  'Pop' , name:  'Turkey' , group:  'B' },
+{long:  24.603189 , lat:  56.879635 , Freq:  14 , genre:  'Rock' , name:  'Latvia' , group:  'A' },
+{long:  -19.020835 , lat:  64.963051 , Freq:  4 , genre:  'Indie Pop' , name:  'Iceland' , group:  'E' },
+{long:  31.16558 , lat:  48.379433 , Freq:  4 , genre:  'Black Metal' , name:  'Ukraine' , group:  'G' },
+{long:  -74.297333 , lat:  4.570868 , Freq:  1 , genre:  'Alternative Rock' , name:  'Colombia' , group:  'C' },
+{long:  127.766922 , lat:  35.907757 , Freq:  10 , genre:  'K-Pop' , name:  'Korea, Republic of' , group:  'H' },
+{long:  113.921327 , lat:  -0.789275 , Freq:  9 , genre:  'Pop' , name:  'Indonesia' , group:  'B' },
+{long:  34.851612 , lat:  31.046051 , Freq:  7 , genre:  'Psychedelic Trance' , name:  'Israel' , group:  'H' },
+{long:  -8.24389 , lat:  53.41291 , Freq:  12 , genre:  'Celtic' , name:  'Ireland' , group:  'H' },
+{long:  69.345116 , lat:  30.375321 , Freq:  1 , genre:  'Pop' , name:  'Pakistan' , group:  'B' },
+{long:  -77.297508 , lat:  18.109581 , Freq:  6 , genre:  'Reggae' , name:  'Jamaica' , group:  'H' },
+{long:  21.745275 , lat:  41.608635 , Freq:  1 , genre:  'Punk Rock' , name:  'Macedonia, the former Yugoslav Republic of' , group:  'F' },
+{long:  15.2 , lat:  45.1 , Freq:  5 , genre:  'Rock' , name:  'Croatia' , group:  'A' },
+{long:  53.847818 , lat:  23.424076 , Freq:  1 , genre:  'Death Metal' , name:  'United Arab Emirates' , group:  'H' },
+{long:  -159.996719 , lat:  -0.37435 , Freq:  1 , genre:  'Alternative Rock' , name:  'United States Minor Outlying Islands' , group:  'C' },
+{long:  114.109497 , lat:  22.396428 , Freq:  1 , genre:  'Teen Pop' , name:  'Hong Kong' , group:  'H' },
+{long:  -55.765835 , lat:  -32.522779 , Freq:  2 , genre:  'Rock' , name:  'Uruguay' , group:  'A' },
+{long:  101.975766 , lat:  4.210484 , Freq:  1 , genre:  'Thrash Metal' , name:  'Malaysia' , group:  'H' },
+{long:  108.277199 , lat:  14.058324 , Freq:  3 , genre:  'Heavy Metal' , name:  'Viet Nam' , group:  'D' },
+{long:  -66.58973 , lat:  6.42375 , Freq:  4 , genre:  'Latin Rock' , name:  'Venezuela, Bolivarian Republic of' , group:  'H' },
+{long:  -75.015152 , lat:  -9.189967 , Freq:  4 , genre:  'Rock' , name:  'Peru' , group:  'A' },
+{long:  121.774017 , lat:  12.879721 , Freq:  7 , genre:  'Alternative Rock' , name:  'Philippines' , group:  'C' },
+{long:  -42.604303 , lat:  71.706936 , Freq:  1 , genre:  'Pop Punk' , name:  'Greenland' , group:  'H' },
+{long:  120.960515 , lat:  23.69781 , Freq:  3 , genre:  'Mandopop' , name:  'Taiwan, Province of China' , group:  'H' },
+{long:  100.992541 , lat:  15.870032 , Freq:  1 , genre:  'Electronic' , name:  'Thailand' , group:  'H' },
+{long:  21.005859 , lat:  44.016521 , Freq:  4 , genre:  'Irish Folk' , name:  'Serbia' , group:  'H' },
+{long:  27.953389 , lat:  53.709807 , Freq:  1 , genre:  'Punk Rock' , name:  'Belarus' , group:  'F' },
+{long:  19.699024 , lat:  48.669026 , Freq:  9 , genre:  'Rock' , name:  'Slovakia' , group:  'A' },
+{long:  103.819836 , lat:  1.352083 , Freq:  1 , genre:  'Alternative Metal' , name:  'Singapore' , group:  'H' },
+{long:  9.555373 , lat:  47.166 , Freq:  2 , genre:  'Dark Wave' , name:  'Liechtenstein' , group:  'H' },
+{long:  17.679076 , lat:  43.915886 , Freq:  1 , genre:  'Rock' , name:  'Bosnia and Herzegovina' , group:  'A' },
+{long:  8.675277 , lat:  9.081999 , Freq:  1 , genre:  'Afrobeat' , name:  'Nigeria' , group:  'H' },
+{long:  -6.911806 , lat:  61.892635 , Freq:  1 , genre:  'Doom Metal' , name:  'Faroe Islands' , group:  'H' },
+{long:  34.888822 , lat:  -6.369028 , Freq:  3 , genre:  'Gospel' , name:  'Tanzania, United Republic of' , group:  'H' },
+{long:  104.195397 , lat:  35.86166 , Freq:  1 , genre:  'Neofolk' , name:  'China' , group:  'H' },
+{long:  53.688046 , lat:  32.427908 , Freq:  1 , genre:  'Blues' , name:  'Iran, Islamic Republic of' , group:  'H' },
+{long:  45.079162 , lat:  23.885942 , Freq:  1 , genre:  'Pop' , name:  'Saudi Arabia' , group:  'B' }
+
+];
+const svg = d3.select("#my_dataviz")
+  .append("svg")
+  .attr("width", width)
+  .attr("height", height)
+    
+    // Map and projection. Try:  d3.geoAiry() / d3.geoAitoff() / d3.geoArmadillo() / d3.geoAugust() / d3.geoAzimuthalEqualArea() / d3.geoAzimuthalEquidistant() and more
+  const projection = d3.geoCylindricalStereographic()
+        .scale(width / 2.1 / Math.PI)
+        .translate([width / 2, height / 2])
+  
+  
+  
+    // Load external data and boot
+  
+    d3.json("https://raw.githubusercontent.com/holtzy/D3-graph-gallery/master/DATA/world.geojson").then( function(data){  
+        // Draw the map
+  
+  // Create a color scale
+  const color = d3.scaleOrdinal()
+      .domain(["A", "B", "C" ,"D","E","F","G","H" ])
+      .range(['red','yellow','#4CC417','#ff00ff','#b4c04c','#7E3517','#9f00ff','black'])
+
+    // Add a scale for bubble size
+  const size = d3.scaleLinear()
+      .domain([1,2000])  // What's in the data
+      .range([ 4, 50])  // Size in pixel
+  
+        svg.append("g")
+            .selectAll("path")
+            .data(data.features)
+            .join("path")
+                .attr("fill", "#fed8b1")
+                .attr("d", d3.geoPath()
+                    .projection(projection)
+                )
+                .style("stroke", "black")
+                .style("opacity", .3)
+
+
+    // create a tooltip
+  const Tooltip = d3.select("#my_dataviz")
+      .append("div")
+      .attr("class", "tooltip")
+      .style("opacity", 1)
+      .style("background-color", "white")
+      .style("border", "solid")
+      .style("border-width", "2px")
+      .style("border-radius", "5px")
+      .style("padding", "5px")
+      .style("z-index", 1000)
+      .style("position","absolute")
+      
+
+    // Three function that change the tooltip when user hover / move / leave a cell
+  const mouseover = function(event, d) {
+      Tooltip.style("opacity", 1)
+      .html( "Country: " + d.name + "<br>" + "Genre: " + d.genre + "<br>")
+      .style("left", (event.x) + "px")
+        .style("top", (event.y)  + "px")
+    }
+    
+  var mouseleave = function(event, d) {
+      Tooltip.style("opacity", 0)
+    }
+        // Add circles:
+  svg
+      .selectAll("myCircles")
+      .data(markers)
+      .join("circle")
+        .attr("class" , d => d.group )
+        .attr("cx", d => projection([d.long, d.lat])[0])
+        .attr("cy", d => projection([d.long, d.lat])[1])
+        .attr("r", 8)
+        .style("fill", d => color(d.group))
+        .attr("stroke", d => color(d.group))
+        .attr("stroke-width", 1)
+        .attr("fill-opacity", 1)
+        .on("mouseover", mouseover)
+      .on("mouseleave", mouseleave)
+
+    // This function is gonna change the opacity and size of selected and unselected circles
+    function update(){
+
+      // For each check box:
+      d3.selectAll(".checkbox").each(function(d){
+        cb = d3.select(this);
+        grp = cb.property("value")
+
+        // If the box is check, I show the group
+        if(cb.property("checked")){
+          svg.selectAll("."+grp).transition().duration(1000).style("opacity", 1).attr("r", 8)
+
+        // Otherwise I hide it
+        }else{
+          svg.selectAll("."+grp).transition().duration(1000).style("opacity", 0).attr("r", 0)
+        }
+      })
+    }
+
+    // When a button change, I run the update function
+    d3.selectAll(".checkbox").on("change",update);
+
+    // And I initialize it at the beginning
+    update()
+    
+  })
+  
+  
+  
+
+    </script>
